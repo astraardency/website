@@ -1,0 +1,13 @@
+{
+  "latestVersionCode": 1,
+  "latestVersionName": "1.0.0",
+  "apkUrl": "/vibeflow.apk",
+  "releaseDate": "2026-06-18",
+  "minAndroid": "Android 8+",
+  "message": "Latest Vibeflow APK is ready to download.",
+  "changelog": [
+    "Official Vibeflow APK download page added",
+    "Mobile and laptop responsive layout improved",
+    "Version update system added using version.json"
+  ]
+}
