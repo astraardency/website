@@ -18,7 +18,7 @@ import {
 import "./App.css";
 
 const WEBSITE_LINK = "https://vibeflow-chi-two.vercel.app/";
-const DEFAULT_APK_LINK = "";
+const DEFAULT_APK_LINK = " ";
 
 function App() {
   const [version, setVersion] = useState({
