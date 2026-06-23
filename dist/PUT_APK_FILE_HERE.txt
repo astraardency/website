@@ -1,0 +1,11 @@
+Put your real APK file in this folder and rename it exactly:
+
+vibeflow.apk
+
+Final path:
+public/vibeflow.apk
+
+Important for update without uninstall:
+1. Same package name/applicationId
+2. Same signing keystore
+3. Higher versionCode in every new APK

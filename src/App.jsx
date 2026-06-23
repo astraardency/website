@@ -168,6 +168,10 @@ function App() {
           </div>
         </section>
       </main>
+      <section className="video-card">
+          <video className="video-player" autoPlay loop muted playsInline src="./vibeflow-ad.mp4" type="video/mp4" aria-label="Vibeflow demo video">
+          </video>
+      </section>
 
       <section className="update-card">
         <div className="update-left">
@@ -184,31 +188,6 @@ function App() {
           </p>
         </div>
 
-        <div className="rules">
-          <div className="rule">
-            <BadgeCheck size={22} />
-            <div>
-              <h3>Same package name</h3>
-              <p>Do not change your app applicationId.</p>
-            </div>
-          </div>
-
-          <div className="rule">
-            <ShieldCheck size={22} />
-            <div>
-              <h3>Same signing key</h3>
-              <p>Use the same release keystore for every APK.</p>
-            </div>
-          </div>
-
-          <div className="rule">
-            <UploadCloud size={22} />
-            <div>
-              <h3>Higher versionCode</h3>
-              <p>Increase versionCode for every new release.</p>
-            </div>
-          </div>
-        </div>
       </section>
 
       <section className="details-grid">
@@ -289,7 +268,7 @@ function App() {
       </section>
 
       <footer>
-        <p>© 2026 Vibeflow. All rights reserved.</p>
+        <p>© 2026 Vibeflow. @Astraardency.</p>
       </footer>
     </div>
   );

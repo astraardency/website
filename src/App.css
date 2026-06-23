@@ -933,3 +933,28 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+.video-card {
+  width: min(1180px, 100%);
+
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 26px;
+  padding: 30px;
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.045)),
+    radial-gradient(circle at top left, rgba(51, 255, 182, 0.15), transparent 35%);
+  border: 1px solid var(--line);
+}
+.video-left {
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(255, 17, 120, 0.25), rgba(0, 229, 255, 0.2));
+}
+.video-player {
+  width: 1110px;
+  height: 628px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(255, 17, 120,    0.25), rgba(0, 229, 255, 0.2));
+}
