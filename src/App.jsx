@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   ArrowDownToLine,
-  BadgeCheck,
   CalendarDays,
   ExternalLink,
   FileJson,
@@ -9,10 +8,8 @@ import {
   Info,
   Music2,
   RefreshCw,
-  ShieldCheck,
   Smartphone,
   Sparkles,
-  UploadCloud,
   Zap,
 } from "lucide-react";
 import "./App.css";
@@ -168,9 +165,18 @@ function App() {
           </div>
         </section>
       </main>
+
       <section className="video-card">
-          <video className="video-player" autoPlay loop muted playsInline src="./vibeflow-ad.mp4" type="video/mp4" aria-label="Vibeflow demo video">
-          </video>
+        <video 
+          className="video-player" 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          src="./vibeflow-ad.mp4" 
+          type="video/mp4" 
+          aria-label="Vibeflow demo video"
+        />
       </section>
 
       <section className="update-card">
@@ -187,7 +193,6 @@ function App() {
             the new versionCode is higher.
           </p>
         </div>
-
       </section>
 
       <section className="details-grid">
