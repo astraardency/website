@@ -9,8 +9,9 @@ import {
   Music2,
   RefreshCw,
   Smartphone,
-  Sparkles,
   Zap,
+  Moon,
+  Sun
 } from "lucide-react";
 import "./App.css";
 
@@ -32,12 +33,20 @@ function App() {
     ],
   });
 
+  const [theme, setTheme] = useState("dark"); // Start with dark or light
+
+  useEffect(() => {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  }, []);
+
   useEffect(() => {
     fetch("/version.json", { cache: "no-store" })
       .then((res) => {
-        if (!res.ok) {
-          throw new Error("version.json not found");
-        }
+        if (!res.ok) throw new Error("version.json not found");
         return res.json();
       })
       .then((data) => {
@@ -49,231 +58,158 @@ function App() {
             : oldData.changelog,
         }));
       })
-      .catch(() => {
-        // Fallback data already exists.
-      });
+      .catch(() => { });
   }, []);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === "light" ? "dark" : "light");
+  };
 
   const apkLink = version.apkUrl || DEFAULT_APK_LINK;
 
   return (
-    <div className="app">
-      <div className="grid-bg"></div>
-      <div className="orb orb-one"></div>
-      <div className="orb orb-two"></div>
-      <div className="orb orb-three"></div>
-
-      <header className="navbar">
-        <a href="#home" className="brand" aria-label="Vibeflow home">
-          <span className="brand-icon">
-            <Headphones size={23} />
-          </span>
-          <span>Vibeflow</span>
-        </a>
-
-        <a
-          className="website-link"
-          href={WEBSITE_LINK}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span>Open Website</span>
-          <ExternalLink size={16} />
-        </a>
-      </header>
-
-      <main id="home" className="hero">
-        <section className="hero-content">
-          <div className="badge">
-            <Sparkles size={16} />
-            Official APK Update Page
-          </div>
-
-          <h1>
-            Download the latest <span>Vibeflow</span> APK
-          </h1>
-
-          <p className="hero-text">
-            Install Vibeflow for the first time or update to the newest version
-            without uninstalling your existing app.
-          </p>
-
-          <div className="actions">
-            <a className="download-btn" href={apkLink} download>
-              <ArrowDownToLine size={21} />
-              Download APK v{version.latestVersionName}
-            </a>
-
+    <div className="app" data-theme={theme}>
+      <header className="header">
+        <div className="container header-content">
+          <a href="#home" className="logo">
+            <Headphones size={24} />
+            <span>Vibeflow</span>
+          </a>
+          <div className="header-actions">
+            <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle Theme">
+              {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
             <a
-              className="outline-btn"
               href={WEBSITE_LINK}
               target="_blank"
               rel="noreferrer"
+              className="link-button"
             >
-              Visit Website
-              <ExternalLink size={18} />
+              <span>Website</span> <ExternalLink size={16} />
             </a>
           </div>
+        </div>
+      </header>
 
-          <div className="version-strip">
-            <div>
-              <small>Latest Version</small>
-              <strong>{version.latestVersionName}</strong>
+      <main id="home">
+        <section className="hero">
+          <div className="container hero-container">
+            <div className="hero-text">
+              <span className="pill">Official APK Update</span>
+              <h1>Download <span>Vibeflow</span></h1>
+              <p>
+                Get the latest version of Vibeflow for your Android device.
+                Install or update safely without losing your data.
+              </p>
+
+              <div className="hero-actions">
+                <a href={apkLink} className="btn btn-primary btn-3d" download>
+                  <ArrowDownToLine size={20} />
+                  Download APK (v{version.latestVersionName})
+                </a>
+              </div>
+
+              <div className="version-info">
+                <div>
+                  <span>Version:</span> {version.latestVersionName}
+                </div>
+                <div>
+                  <span>Code:</span> {version.latestVersionCode}
+                </div>
+                <div>
+                  <span>Requires:</span> {version.minAndroid}
+                </div>
+              </div>
             </div>
-            <div>
-              <small>Version Code</small>
-              <strong>{version.latestVersionCode}</strong>
-            </div>
-            <div>
-              <small>Support</small>
-              <strong>{version.minAndroid}</strong>
+
+            <div className="hero-visual">
+              <div className="simple-phone phone-3d">
+                <div className="phone-notch"></div>
+                <img src="./img.jpg" alt="Vibeflow App" className="phone-screenshot" />
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="preview-section">
-          <div className="phone-frame">
-            <div className="speaker"></div>
+        <section className="container section">
+          <video
+            className="demo-video video-3d"
+            autoPlay
+            loop
+            muted
+            playsInline
+            src="./vibeflow-ad.mp4"
+            aria-label="Vibeflow demo video"
+          />
+        </section>
 
-            <div className="phone-screen">
-              <div className="screen-top">
-                <span>Vibeflow</span>
-                <Music2 size={18} />
+        <section className="container section">
+          <div className="grid-2">
+            <div className="card card-3d">
+              <div className="card-header">
+                <div className="icon-3d"><Info size={24} /></div>
+                <h2>Release Notes</h2>
               </div>
-
-              <div className="album-card">
-                <div className="disc">
-                  <Music2 size={58} />
-                </div>
+              <p className="release-msg">{version.message}</p>
+              <div className="meta-tags">
+                <span className="tag">
+                  <CalendarDays size={16} /> {version.releaseDate}
+                </span>
+                <span className="tag">
+                  <Smartphone size={16} /> {version.minAndroid}
+                </span>
+                <span className="tag">
+                  <FileJson size={16} /> version.json
+                </span>
               </div>
-
-              <h2>Version {version.latestVersionName}</h2>
-              <p>Music • Podcast • Playlist</p>
-
-              <div className="player-line">
-                <span></span>
-              </div>
-
-              <div className="equalizer" aria-hidden="true">
-                <i></i>
-                <i></i>
-                <i></i>
-                <i></i>
-                <i></i>
-              </div>
+              <h4>Changelog:</h4>
+              <ul className="changelog">
+                {version.changelog.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
             </div>
+
+            <div className="card card-3d">
+              <div className="card-header">
+                <div className="icon-3d"><RefreshCw size={24} /></div>
+                <h2>How to Update</h2>
+              </div>
+              <ol className="steps-list">
+                <li>Download the latest APK from this page.</li>
+                <li>Open the downloaded file on your Android device.</li>
+                <li>
+                  When prompted with "Update this app?", tap <strong>Update</strong>.
+                </li>
+                <li>Your existing data and settings will remain safe.</li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <section className="container section features-grid">
+          <div className="feature card-3d">
+            <div className="icon-3d"><Smartphone size={32} /></div>
+            <h3>Mobile Ready</h3>
+            <p>Optimized for an effortless download experience on your phone.</p>
+          </div>
+          <div className="feature card-3d">
+            <div className="icon-3d"><Zap size={32} /></div>
+            <h3>Fast & Clean</h3>
+            <p>A simple, lightweight page designed to get you the app quickly.</p>
+          </div>
+          <div className="feature card-3d">
+            <div className="icon-3d"><FileJson size={32} /></div>
+            <h3>Auto-Synced</h3>
+            <p>Always fetches the latest release details automatically.</p>
           </div>
         </section>
       </main>
 
-      <section className="video-card">
-        <video 
-          className="video-player" 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          src="./vibeflow-ad.mp4" 
-          type="video/mp4" 
-          aria-label="Vibeflow demo video"
-        />
-      </section>
-
-      <section className="update-card">
-        <div className="update-left">
-          <div className="section-badge">
-            <RefreshCw size={17} />
-            Update System
-          </div>
-
-          <h2>Update without uninstall</h2>
-          <p>
-            When users download the new APK, Android will update the existing
-            Vibeflow app if the package name and signing key are the same and
-            the new versionCode is higher.
-          </p>
+      <footer className="footer">
+        <div className="container">
+          <p>© 2026 Vibeflow. Created by @Astraardency.</p>
         </div>
-      </section>
-
-      <section className="details-grid">
-        <article className="latest-card">
-          <div className="card-title">
-            <Info size={22} />
-            <h2>Latest release</h2>
-          </div>
-
-          <p className="message">{version.message}</p>
-
-          <div className="release-meta">
-            <span>
-              <CalendarDays size={16} />
-              {version.releaseDate}
-            </span>
-            <span>
-              <Smartphone size={16} />
-              {version.minAndroid}
-            </span>
-            <span>
-              <FileJson size={16} />
-              version.json
-            </span>
-          </div>
-
-          <h3>What&apos;s new</h3>
-          <ul>
-            {version.changelog.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </article>
-
-        <article className="steps-card">
-          <h2>How users update</h2>
-
-          <div className="step">
-            <span>1</span>
-            <p>User opens this Vibeflow download page.</p>
-          </div>
-
-          <div className="step">
-            <span>2</span>
-            <p>User clicks Download APK and installs the new APK.</p>
-          </div>
-
-          <div className="step">
-            <span>3</span>
-            <p>Android shows Update this app? instead of uninstall.</p>
-          </div>
-
-          <div className="step">
-            <span>4</span>
-            <p>User clicks Update and the old app updates safely.</p>
-          </div>
-        </article>
-      </section>
-
-      <section className="features">
-        <article>
-          <Smartphone size={27} />
-          <h3>Mobile Ready</h3>
-          <p>Full width download action and clean layout for phone users.</p>
-        </article>
-
-        <article>
-          <Zap size={27} />
-          <h3>Smooth UI</h3>
-          <p>Animated background, hover effects, and modern transitions.</p>
-        </article>
-
-        <article>
-          <FileJson size={27} />
-          <h3>Version JSON</h3>
-          <p>Update the latest version details from public/version.json.</p>
-        </article>
-      </section>
-
-      <footer>
-        <p>© 2026 Vibeflow. @Astraardency.</p>
       </footer>
     </div>
   );
