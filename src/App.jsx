@@ -11,12 +11,10 @@ import {
   Clock,
   Smartphone,
   Play,
-  FileJson,
   CalendarDays,
   Info,
   RefreshCw,
-  ExternalLink,
-  Laptop
+  ExternalLink
 } from "lucide-react";
 import "./App.css";
 
