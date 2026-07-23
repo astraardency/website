@@ -17,6 +17,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import "./App.css";
+import AdBanner from "./AdBanner";
 
 const WEBSITE_LINK = "https://vibeflow-chi-two.vercel.app/";
 const DEFAULT_APK_LINK = "/vibeflow.apk";
@@ -386,6 +387,9 @@ function App() {
                     Experience adaptive equalizers, lossless audio stream rendering, and beautiful visualizers on your Android device. Secure, ad-free standalone package.
                   </p>
                   
+                  {/* Place the ad right above the download button */}
+                  <AdBanner />
+
                   {/* Master Download Action */}
                   <div className="hero-actions">
                     <button
