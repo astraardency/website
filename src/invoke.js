@@ -1,5 +1,4 @@
 export default function AdBanner() {
-  // We place the exact HTML Adsterra expects inside a string
   const adCode = `
     <!DOCTYPE html>
     <html>
@@ -9,20 +8,21 @@ export default function AdBanner() {
         </style>
       </head>
       <body>
-        <div id="container-104665f6d5c53e39ba250bd4621fa43e"></div>
-        <script async="async" data-cfasync="false" src="https://pl30500412.effectivecpmnetwork.com/104665f6d5c53e39ba250bd4621fa43e/invoke.js"></script>
+        <div id="container-YOUR-UNIQUE-ID"></div>
+        <!-- PASTE YOUR EXACT ADSTERRA SCRIPT URL HERE -->
+        <script async="async" data-cfasync="false" src="https://pl30500412.effectivecpmnetwork.com/YOUR-UNIQUE-ID/invoke.js"></script>
       </body>
     </html>
   `;
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
-      <iframe
+      <iframe 
         title="Adsterra Banner"
-        srcDoc={adCode}
-        width="300" // Adjust to match the ad size you created in Adsterra
-        height="250" // Adjust to match the ad size you created in Adsterra
-        frameBorder="0"
+        srcDoc={adCode} 
+        width="300" 
+        height="250" 
+        frameBorder="0" 
         scrolling="no"
         style={{ border: 'none', overflow: 'hidden' }}
       ></iframe>
