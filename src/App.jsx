@@ -1,158 +1,88 @@
 import { useEffect, useState, useRef } from "react";
 import {
   Compass,
-  Grid,
   UploadCloud,
   BarChart3,
   Sun,
   Moon,
-  Search,
   Download,
   Star,
   CheckCircle,
-  TrendingUp,
-  Cpu,
-  Layers,
-  ArrowRight,
   Clock,
-  ThumbsUp,
+  Smartphone,
   Play,
-  FileText
+  FileJson,
+  CalendarDays,
+  Info,
+  RefreshCw,
+  ExternalLink,
+  Laptop
 } from "lucide-react";
 import "./App.css";
 
-const INITIAL_APPS = [
-  {
-    id: "vibeflow",
-    name: "Vibeflow Pro",
-    developer: "Astraardency",
-    version: "1.0.10",
-    category: "Music & Audio",
-    rating: 4.9,
-    downloads: 12450,
-    size: "24.6 MB",
-    icon: "./icon.png",
-    description: "Vibeflow is a modern, high-fidelity music streaming and audio management player with adaptive themes, premium equalizer controls, and offline syncing capabilities.",
-    apkUrl: "/vibeflow.apk",
-    featured: true,
-  },
-  {
-    id: "retroarch",
-    name: "RetroArch Arcade",
-    developer: "Libretro Team",
-    version: "1.16.0",
-    category: "Games",
-    rating: 4.7,
-    downloads: 89400,
-    size: "85.2 MB",
-    icon: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=120&h=120&fit=crop&q=80",
-    description: "A powerful frontend emulator for retro game consoles, game engines, and media players.",
-    apkUrl: "#",
-    featured: true,
-  },
-  {
-    id: "tasker",
-    name: "Tasker Automation",
-    developer: "Crafty Apps EU",
-    version: "6.1.32",
-    category: "Productivity",
-    rating: 4.6,
-    downloads: 45200,
-    size: "18.1 MB",
-    icon: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=120&h=120&fit=crop&q=80",
-    description: "Automate everything from settings to SMS. Custom triggers, actions, and full context-aware automations.",
-    apkUrl: "#",
-    featured: false,
-  },
-  {
-    id: "solidexplorer",
-    name: "Solid Explorer",
-    developer: "NeatBytes Labs",
-    version: "2.8.25",
-    category: "Tools",
-    rating: 4.8,
-    downloads: 67100,
-    size: "15.4 MB",
-    icon: "https://images.unsplash.com/photo-1618005198143-e528346d9a59?w=120&h=120&fit=crop&q=80",
-    description: "Elegant and secure dual-pane cloud and local file explorer with custom encryption.",
-    apkUrl: "#",
-    featured: false,
-  },
-  {
-    id: "kinemaster",
-    name: "KineMaster Editor",
-    developer: "KineMaster Corp.",
-    version: "7.0.8",
-    category: "Productivity",
-    rating: 4.5,
-    downloads: 110200,
-    size: "95.7 MB",
-    icon: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=120&h=120&fit=crop&q=80",
-    description: "Professional-grade mobile video editor featuring chroma key, multi-track timelines, and filters.",
-    apkUrl: "#",
-    featured: false,
-  },
-  {
-    id: "novalauncher",
-    name: "Nova Launcher Prime",
-    developer: "TeslaCoil Software",
-    version: "8.0.6",
-    category: "Personalization",
-    rating: 4.9,
-    downloads: 154000,
-    size: "12.3 MB",
-    icon: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=120&h=120&fit=crop&q=80",
-    description: "The definitive home screen replacement featuring gestures, custom icon packs, and subgrid positioning.",
-    apkUrl: "#",
-    featured: true,
-  },
-];
+const WEBSITE_LINK = "https://vibeflow-chi-two.vercel.app/";
+const DEFAULT_APK_LINK = "/vibeflow.apk";
 
 const INITIAL_REVIEWS = [
   {
     id: 1,
     name: "Alex Rivera",
-    appName: "Vibeflow Pro",
     rating: 5,
-    text: "Absolutely stunning audio visualization. The dark theme matches my phone design perfectly, and it's super responsive!",
+    text: "Absolutely stunning audio visualization. The dark theme matches my phone design perfectly, and the equalizer is super responsive!",
     date: "2 hours ago"
   },
   {
     id: 2,
     name: "Marcus Chen",
-    appName: "RetroArch Arcade",
     rating: 5,
-    text: "Outstanding emulator speed! Played my childhood favorite games smoothly. Thank you Libretro Team!",
+    text: "Outstanding streaming speed! Played my high-res audio tracks smoothly. The background playback works like a charm.",
     date: "1 day ago"
   },
   {
     id: 3,
     name: "Sarah Jenkins",
-    appName: "Tasker Automation",
     rating: 4,
-    text: "Extremely powerful tools. Setting up context-based tasks has saved me so much time. Highly recommend it.",
+    text: "Extremely clean interface. Setting up playlists and downloading tracks offline has saved me so much cellular data.",
     date: "3 days ago"
   }
 ];
 
-const CATEGORIES = ["All", "Games", "Productivity", "Tools", "Music & Audio", "Personalization"];
-
 function App() {
   const [theme, setTheme] = useState("dark");
   const [activeTab, setActiveTab] = useState("discover");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [apps, setApps] = useState(INITIAL_APPS);
-  const [reviews, setReviews] = useState(INITIAL_REVIEWS);
-  const [downloadingAppId, setDownloadingAppId] = useState(null);
+  
+  // App Version state (synced with version.json)
+  const [version, setVersion] = useState({
+    latestVersionCode: 1,
+    latestVersionName: "1.0.10",
+    apkUrl: DEFAULT_APK_LINK,
+    releaseDate: "2026-06-18",
+    minAndroid: "Android 8+",
+    downloads: 18450,
+    message: "Latest Vibeflow APK is ready to download.",
+    changelog: [
+      "Official Vibeflow APK download page added",
+      "Mobile and laptop responsive layout improved",
+      "Version update system added using version.json"
+    ],
+  });
 
-  // Publish form states
-  const [formTitle, setFormTitle] = useState("");
-  const [formDev, setFormDev] = useState("");
-  const [formVersion, setFormVersion] = useState("");
-  const [formCategory, setFormCategory] = useState("Games");
-  const [formSize, setFormSize] = useState("");
-  const [formDesc, setFormDesc] = useState("");
+  // Load and save download count in localStorage to feel highly persistent
+  const [downloads, setDownloads] = useState(() => {
+    const saved = localStorage.getItem("vibeflow_downloads");
+    return saved ? parseInt(saved, 10) : 18450;
+  });
+
+  const [reviews, setReviews] = useState(INITIAL_REVIEWS);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+
+  // Form states for Publish / Update
+  const [formVersionName, setFormVersionName] = useState("");
+  const [formVersionCode, setFormVersionCode] = useState("");
+  const [formMinAndroid, setFormMinAndroid] = useState("Android 8+");
+  const [formMessage, setFormMessage] = useState("");
+  const [formChangelog, setFormChangelog] = useState("");
   const [formFile, setFormFile] = useState(null);
   const [isDragActive, setIsDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -161,91 +91,99 @@ function App() {
 
   const fileInputRef = useRef(null);
 
-  // Set initial theme
+  // Set initial theme based on system preference
   useEffect(() => {
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     setTheme(prefersDark ? "dark" : "light");
+  }, []);
+
+  // Fetch version info from version.json on mount
+  useEffect(() => {
+    fetch("/version.json", { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) throw new Error("version.json not found");
+        return res.json();
+      })
+      .then((data) => {
+        setVersion((oldData) => ({
+          ...oldData,
+          ...data,
+          changelog: Array.isArray(data.changelog)
+            ? data.changelog
+            : oldData.changelog,
+        }));
+        if (data.downloads) {
+          const saved = localStorage.getItem("vibeflow_downloads");
+          const parsedSaved = saved ? parseInt(saved, 10) : 0;
+          if (data.downloads > parsedSaved) {
+            setDownloads(data.downloads);
+            localStorage.setItem("vibeflow_downloads", data.downloads.toString());
+          } else if (saved) {
+            setDownloads(parsedSaved);
+          } else {
+            setDownloads(data.downloads);
+          }
+        }
+      })
+      .catch(() => { });
   }, []);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
-  // Dynamic metrics
-  const totalDownloads = apps.reduce((sum, app) => sum + app.downloads, 0);
-  const activeAppsCount = apps.length;
-  const averageRating = (apps.reduce((sum, app) => sum + app.rating, 0) / apps.length).toFixed(1);
-  const totalPoints = Math.round(totalDownloads * 0.15);
+  // Handle Vibeflow Download simulation with progress spinner
+  const handleDownload = () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    setDownloadProgress(0);
 
-  // Dynamically calculate mock monthly data for the chart, tying the last index to totalDownloads
-  const baseMonthlyDownloads = [120000, 185000, 240000, 210000, 310000, 390000];
-  const chartData = [...baseMonthlyDownloads, totalDownloads];
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Today"];
+    const interval = setInterval(() => {
+      setDownloadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          
+          // Complete download state
+          setIsDownloading(false);
+          const newDownloads = downloads + 1;
+          setDownloads(newDownloads);
+          localStorage.setItem("vibeflow_downloads", newDownloads.toString());
 
-  // Search filter helper
-  const filteredApps = apps.filter((app) => {
-    const matchesSearch =
-      app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.developer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.category.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    if (selectedCategory === "All") {
-      return matchesSearch;
-    }
-    return matchesSearch && app.category === selectedCategory;
-  });
+          // Append feedback dynamically
+          const feedbackList = [
+            "Smooth install on my device, works beautifully!",
+            "Immediate setup, sounds amazing with my headphones.",
+            "The offline sync capability in this update is stellar.",
+            "Super clean package download, no bugs encountered."
+          ];
+          const selectedFeedback = feedbackList[Math.floor(Math.random() * feedbackList.length)];
+          setReviews((prevReviews) => [
+            {
+              id: Date.now(),
+              name: "User #" + Math.floor(Math.random() * 900 + 100),
+              rating: 5,
+              text: selectedFeedback,
+              date: "Just now"
+            },
+            ...prevReviews
+          ]);
 
-  // Handle mock download
-  const handleDownload = (appId, apkUrl, appName) => {
-    setDownloadingAppId(appId);
-    
-    // Simulate connection delay for premium feel
-    setTimeout(() => {
-      setApps((prevApps) =>
-        prevApps.map((app) => {
-          if (app.id === appId) {
-            return { ...app, downloads: app.downloads + 1 };
-          }
-          return app;
-        })
-      );
-      
-      // Inject dynamic positive review
-      const randomComments = [
-        "Just downloaded, super fast install!",
-        "Excellent package, safe and verified signature.",
-        "The new update is running flawless.",
-        "Smooth setup, immediately operational."
-      ];
-      const selectedComment = randomComments[Math.floor(Math.random() * randomComments.length)];
-      
-      setReviews((prevReviews) => [
-        {
-          id: Date.now(),
-          name: "Anonymous User",
-          appName: appName,
-          rating: 5,
-          text: selectedComment,
-          date: "Just now"
-        },
-        ...prevReviews.slice(0, 5) // Cap reviews list
-      ]);
+          // Trigger browser download
+          const link = document.createElement("a");
+          link.href = version.apkUrl || DEFAULT_APK_LINK;
+          link.download = "vibeflow.apk";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-      setDownloadingAppId(null);
-      
-      // Trigger actual download if it is Vibeflow
-      if (apkUrl && apkUrl !== "#") {
-        const link = document.createElement("a");
-        link.href = apkUrl;
-        link.download = apkUrl.substring(apkUrl.lastIndexOf('/') + 1);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    }, 1200);
+          return 100;
+        }
+        return prev + 20;
+      });
+    }, 150);
   };
 
-  // Drag and Drop simulation
+  // Drag & drop file handlers
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -260,15 +198,10 @@ function App() {
     e.preventDefault();
     e.stopPropagation();
     setIsDragActive(false);
-    
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
       if (file.name.endsWith(".apk")) {
         setFormFile(file);
-        // Autofill size and title details from filename
-        setFormSize(`${(file.size / (1024 * 1024)).toFixed(1)} MB`);
-        const cleanedName = file.name.replace(".apk", "").split(/[-_]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-        setFormTitle(cleanedName);
       } else {
         alert("Please drop a valid .apk file.");
       }
@@ -277,23 +210,19 @@ function App() {
 
   const handleFileSelect = (e) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setFormFile(file);
-      setFormSize(`${(file.size / (1024 * 1024)).toFixed(1)} MB`);
-      const cleanedName = file.name.replace(".apk", "").split(/[-_]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-      setFormTitle(cleanedName);
+      setFormFile(e.target.files[0]);
     }
   };
 
-  // Submit and simulate publishing
+  // Form submission for Publishing/Updating Vibeflow version
   const handlePublishSubmit = (e) => {
     e.preventDefault();
     if (!formFile) {
-      alert("Please upload an APK file first.");
+      alert("Please upload the new Vibeflow APK binary first.");
       return;
     }
-    if (!formTitle || !formDev || !formVersion || !formSize) {
-      alert("Please fill out all mandatory fields.");
+    if (!formVersionName || !formVersionCode) {
+      alert("Version Name and Version Code are required.");
       return;
     }
 
@@ -301,43 +230,38 @@ function App() {
     setUploadProgress(0);
     setUploadSuccess(false);
 
-    // Simulate progress bar movement
     const interval = setInterval(() => {
       setUploadProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setUploading(false);
           setUploadSuccess(true);
-          
-          // Add new app to the listing
-          const newAppId = formTitle.toLowerCase().replace(/\s+/g, "-");
-          const newApp = {
-            id: newAppId,
-            name: formTitle,
-            developer: formDev,
-            version: formVersion,
-            category: formCategory,
-            rating: 5.0,
-            downloads: 100, // Starts with some initial downloads
-            size: formSize,
-            icon: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&h=120&fit=crop&q=80", // Default gradient icon
-            description: formDesc || "A modern application published by verified developers.",
-            apkUrl: "#",
-            featured: false,
-          };
 
-          setApps((prevApps) => [newApp, ...prevApps]);
-          
+          // Update Vibeflow app details in local state
+          const newChangelog = formChangelog
+            ? formChangelog.split("\n").filter(line => line.trim() !== "")
+            : ["General performance improvements", "Bug fixes and stability patches"];
+
+          setVersion((prevVersion) => ({
+            ...prevVersion,
+            latestVersionName: formVersionName,
+            latestVersionCode: parseInt(formVersionCode, 10),
+            minAndroid: formMinAndroid,
+            message: formMessage || "A new update has been pushed by the developer.",
+            releaseDate: new Date().toISOString().split('T')[0],
+            changelog: newChangelog
+          }));
+
           // Clear inputs
           setTimeout(() => {
-            setFormTitle("");
-            setFormDev("");
-            setFormVersion("");
-            setFormSize("");
-            setFormDesc("");
+            setFormVersionName("");
+            setFormVersionCode("");
+            setFormMinAndroid("Android 8+");
+            setFormMessage("");
+            setFormChangelog("");
             setFormFile(null);
             setUploadSuccess(false);
-            setActiveTab("browse"); // Route back to see uploaded file
+            setActiveTab("discover"); // Switch to discover tab to view the live update
           }, 2000);
 
           return 100;
@@ -347,28 +271,37 @@ function App() {
     }, 200);
   };
 
-  // Helper to render stars
+  // Helper rating renderer
   const renderStars = (rating) => {
     const stars = [];
     const floor = Math.floor(rating);
     for (let i = 1; i <= 5; i++) {
-      if (i <= floor) {
-        stars.push(<Star key={i} size={14} fill="currentColor" />);
-      } else {
-        stars.push(<Star key={i} size={14} />);
-      }
+      stars.push(
+        <Star
+          key={i}
+          size={14}
+          fill={i <= floor ? "currentColor" : "none"}
+          stroke="currentColor"
+          className="star-rating"
+        />
+      );
     }
     return stars;
   };
 
-  // SVG Chart path calculation helper
+  // Dynamic SVG Chart Coordinates for Vibeflow Downloads
+  // Base numbers mapping to months, with current live downloads as the final entry
+  const baseMonthlyDownloads = [8500, 9600, 10800, 11400, 11900, 12200];
+  const chartData = [...baseMonthlyDownloads, downloads];
+  const months = ["Feb", "Mar", "Apr", "May", "Jun", "Jul", "Today"];
+  
   const maxChartVal = Math.max(...chartData) * 1.1;
   const chartPoints = chartData.map((val, idx) => {
     const x = 50 + (idx / (chartData.length - 1)) * 430;
     const y = 250 - (val / maxChartVal) * 200;
     return { x, y, val };
   });
-  
+
   const chartLinePath = chartPoints.reduce(
     (acc, curr, idx) => `${acc} ${idx === 0 ? "M" : "L"} ${curr.x} ${curr.y}`,
     ""
@@ -378,64 +311,45 @@ function App() {
 
   return (
     <div className="app" data-theme={theme}>
-      {/* Sticky Navbar */}
+      {/* Top Navbar */}
       <header className="header">
         <div className="container header-content">
           <a href="#" className="logo" onClick={() => setActiveTab("discover")}>
             <Compass className="logo-icon" size={28} />
-            <span>AeroPublish</span>
+            <span>Vibeflow Center</span>
           </a>
 
-          {/* Navigation Tab Links */}
+          {/* Navigation links */}
           <nav className="nav-tabs">
             <button
               className={`nav-tab ${activeTab === "discover" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("discover");
-                setSearchQuery("");
-              }}
+              onClick={() => setActiveTab("discover")}
             >
               <Compass size={18} />
               <span>Discover</span>
             </button>
             <button
-              className={`nav-tab ${activeTab === "browse" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("browse");
-                setSearchQuery("");
-              }}
-            >
-              <Grid size={18} />
-              <span>Browse Categories</span>
-            </button>
-            <button
               className={`nav-tab ${activeTab === "publish" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("publish");
-                setSearchQuery("");
-              }}
+              onClick={() => setActiveTab("publish")}
             >
               <UploadCloud size={18} />
-              <span>Publish APK</span>
+              <span>Publish Update</span>
             </button>
             <button
               className={`nav-tab ${activeTab === "dashboard" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("dashboard");
-                setSearchQuery("");
-              }}
+              onClick={() => setActiveTab("dashboard")}
             >
               <BarChart3 size={18} />
-              <span>Dashboard</span>
+              <span>Stats Hub</span>
             </button>
           </nav>
 
           <div className="header-actions">
-            {/* Theme Toggle Button */}
+            {/* Theme toggler */}
             <button
               className="theme-toggle"
               onClick={toggleTheme}
-              aria-label="Toggle visual theme"
+              aria-label="Toggle Theme"
             >
               {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
             </button>
@@ -443,274 +357,199 @@ function App() {
             {/* Profile Avatar */}
             <div className="user-profile" onClick={() => setActiveTab("dashboard")}>
               <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&q=80"
-                alt="Developer Avatar"
+                src="./icon.png"
+                alt="Vibeflow Icon"
                 className="user-avatar"
               />
-              <span className="user-name">Dev Studio</span>
+              <span className="user-name">Vibeflow Core</span>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content Area */}
+      {/* Main Container */}
       <main className="container main-content">
-        {/* Global Search Bar */}
-        {(activeTab === "discover" || activeTab === "browse") && (
-          <div className="search-wrapper">
-            <Search className="search-icon" size={20} />
-            <input
-              type="text"
-              placeholder="Search apps, games, developers, categories..."
-              className="search-input"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        )}
-
+        
         {/* TAB: Discover */}
         {activeTab === "discover" && (
           <div className="tab-pane">
-            {/* If searching, redirect display to filtered list */}
-            {searchQuery ? (
-              <section className="search-results-section">
-                <div className="section-title-bar">
-                  <h2>
-                    <Search size={24} /> Search Results ({filteredApps.length})
-                  </h2>
-                </div>
-                {filteredApps.length > 0 ? (
-                  <div className="app-grid">
-                    {filteredApps.map((app) => (
-                      <div className="app-card" key={app.id}>
-                        <div className="app-card-header">
-                          <img src={app.icon} alt={app.name} className="app-icon" />
-                          <div className="app-details">
-                            <h3 className="app-name">{app.name}</h3>
-                            <p className="app-developer">{app.developer}</p>
-                          </div>
-                        </div>
-                        <div className="app-rating-row">
-                          <div className="star-rating">{renderStars(app.rating)}</div>
-                          <span className="rating-text">{app.rating}</span>
-                          <span className="download-count">
-                            {app.downloads.toLocaleString()} downloads
-                          </span>
-                        </div>
-                        <div className="app-card-footer">
-                          <span className="app-size">{app.size}</span>
-                          <button
-                            className="btn-card"
-                            onClick={() => handleDownload(app.id, app.apkUrl, app.name)}
-                            disabled={downloadingAppId === app.id}
-                          >
-                            {downloadingAppId === app.id ? (
-                              <span>Starting...</span>
-                            ) : (
-                              <>
-                                <Download size={14} /> Download
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p style={{ color: "var(--text-secondary)", textAlign: "center", padding: "40px" }}>
-                    No applications matched your query.
+            
+            {/* Mobile-first Hero Layout */}
+            <section className="discover-hero">
+              <div className="hero-layout">
+                <div className="hero-body">
+                  <span className="hero-badge">
+                    <Smartphone size={14} /> Mobile Optimized
+                  </span>
+                  <h1>
+                    Feel the Beat: Download <span>Vibeflow Pro</span>
+                  </h1>
+                  <p>
+                    Experience adaptive equalizers, lossless audio stream rendering, and beautiful visualizers on your Android device. Secure, ad-free standalone package.
                   </p>
-                )}
-              </section>
-            ) : (
-              <>
-                {/* Featured Hero Banner */}
-                <section className="discover-hero">
-                  <div className="hero-layout">
-                    <div className="hero-body">
-                      <span className="hero-badge">
-                        <Cpu size={14} /> Featured App
-                      </span>
-                      <h1>
-                        High Fidelity Music Streaming: <span>Vibeflow Pro</span>
-                      </h1>
-                      <p>
-                        Experience premium, studio-quality sound tuning, customizable visualizers, and cross-device playlist syncing directly on Android. Free and secure offline downloads.
-                      </p>
-                      <div className="hero-actions">
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => handleDownload("vibeflow", "/vibeflow.apk", "Vibeflow Pro")}
-                          disabled={downloadingAppId === "vibeflow"}
-                        >
-                          <Download size={18} />
-                          {downloadingAppId === "vibeflow" ? "Processing..." : "Get Vibeflow (v1.0.10)"}
-                        </button>
-                        <a href="#demo-video-anchor" className="btn btn-secondary">
-                          <Play size={18} /> Watch Demo
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="hero-media">
-                      <div className="hero-glow-card">
-                        <img src="./img.jpg" alt="Vibeflow UI Preview" />
-                        <div className="hero-app-meta">
-                          <div>
-                            <h3 className="hero-app-title">Vibeflow Pro</h3>
-                            <span className="hero-app-dev">Astraardency • Music & Audio</span>
-                          </div>
-                          <div className="star-rating">
-                            <Star size={16} fill="currentColor" />
-                            <span style={{ marginLeft: "4px", fontWeight: "bold" }}>4.9</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Video Demo Section */}
-                <section className="discover-hero" id="demo-video-anchor" style={{ background: "var(--bg-secondary)", padding: "40px" }}>
-                  <div className="section-title-bar">
-                    <h2>
-                      <Play size={24} /> Application Demo
-                    </h2>
-                  </div>
-                  <video
-                    className="demo-video video-3d"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    src="./vibeflow-ad.mp4"
-                    aria-label="Vibeflow promo video"
-                    style={{ width: "100%", borderRadius: "12px", border: "1px solid var(--glass-border)" }}
-                  />
-                </section>
-
-                {/* Popular App Card Section */}
-                <section className="popular-releases">
-                  <div className="section-title-bar">
-                    <h2>
-                      <TrendingUp size={24} /> Popular App Releases
-                    </h2>
-                    <button className="btn btn-secondary" onClick={() => setActiveTab("browse")}>
-                      View All <ArrowRight size={16} />
+                  
+                  {/* Master Download Action */}
+                  <div className="hero-actions">
+                    <button
+                      className="btn btn-primary"
+                      onClick={handleDownload}
+                      disabled={isDownloading}
+                      style={{ minWidth: "220px" }}
+                    >
+                      <Download size={18} />
+                      {isDownloading ? `Downloading (${downloadProgress}%)` : `Download APK (v${version.latestVersionName})`}
                     </button>
+                    <a
+                      href={WEBSITE_LINK}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-secondary"
+                    >
+                      <span>Official Site</span> <ExternalLink size={16} />
+                    </a>
                   </div>
 
-                  <div className="app-grid">
-                    {apps.map((app) => (
-                      <div className="app-card" key={app.id}>
-                        <div className="app-card-header">
-                          <img src={app.icon} alt={app.name} className="app-icon" />
-                          <div className="app-details">
-                            <h3 className="app-name">{app.name}</h3>
-                            <p className="app-developer">{app.developer}</p>
-                          </div>
-                        </div>
-                        <div className="app-rating-row">
-                          <div className="star-rating">{renderStars(app.rating)}</div>
-                          <span className="rating-text">{app.rating}</span>
-                          <span className="download-count">
-                            {app.downloads.toLocaleString()} downloads
-                          </span>
-                        </div>
-                        <div className="app-card-footer">
-                          <span className="app-size">{app.size}</span>
-                          <button
-                            className="btn-card"
-                            onClick={() => handleDownload(app.id, app.apkUrl, app.name)}
-                            disabled={downloadingAppId === app.id}
-                          >
-                            {downloadingAppId === app.id ? (
-                              <span>Starting...</span>
-                            ) : (
-                              <>
-                                <Download size={14} /> Download
-                              </>
-                            )}
-                          </button>
+                  <div className="version-info" style={{ marginTop: "24px" }}>
+                    <div>
+                      <span>Version:</span> {version.latestVersionName}
+                    </div>
+                    <div>
+                      <span>Requires:</span> {version.minAndroid}
+                    </div>
+                    <div>
+                      <span>Downloads:</span> {downloads.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Isometric Screen Preview */}
+                <div className="hero-media">
+                  <div className="phone-mockup-container">
+                    {/* Glowing background radial blur */}
+                    <div className="phone-glow-bg"></div>
+
+                    {/* Smartphone Bezel Device */}
+                    <div className="phone-device">
+                      <div className="phone-notch"></div>
+                      
+                      {/* Fake OS Status Bar */}
+                      <div className="phone-status-bar">
+                        <span className="phone-time">09:41</span>
+                        <div className="phone-status-icons">
+                          <span style={{ marginRight: "2px" }}>5G</span>
+                          <span>📶</span>
+                          <span style={{ marginLeft: "2px" }}>🔋</span>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </section>
-              </>
-            )}
-          </div>
-        )}
 
-        {/* TAB: Browse Categories */}
-        {activeTab === "browse" && (
-          <div className="tab-pane">
-            <div className="section-title-bar">
-              <h2>
-                <Grid size={24} /> App Directory Catalog
-              </h2>
-              <span style={{ color: "var(--text-secondary)", fontSize: "14px", fontWeight: 600 }}>
-                Showing {filteredApps.length} apps
-              </span>
-            </div>
+                      {/* Display Screen */}
+                      <div className="phone-screen">
+                        <img src="./img.jpg" alt="Vibeflow UI Preview" className="phone-screen-img" />
+                        <div className="phone-reflection"></div>
+                      </div>
 
-            {/* Category selection bar */}
-            <div className="categories-filter-bar">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  className={`category-btn ${selectedCategory === cat ? "active" : ""}`}
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+                      {/* Bottom Dock Bar */}
+                      <div className="phone-dock"></div>
+                    </div>
 
-            {/* Catalog Grid */}
-            {filteredApps.length > 0 ? (
-              <div className="app-grid">
-                {filteredApps.map((app) => (
-                  <div className="app-card" key={app.id}>
-                    <div className="app-card-header">
-                      <img src={app.icon} alt={app.name} className="app-icon" />
-                      <div className="app-details">
-                        <h3 className="app-name">{app.name}</h3>
-                        <p className="app-developer">{app.developer}</p>
+                    {/* Layered Floating Glass Cards */}
+                    <div className="floating-widget widget-left">
+                      <div className="widget-eq-bars">
+                        <div className="eq-bar bar1"></div>
+                        <div className="eq-bar bar2"></div>
+                        <div className="eq-bar bar3"></div>
+                        <div className="eq-bar bar4"></div>
+                      </div>
+                      <div className="widget-content">
+                        <span className="widget-label">Hi-Res Audio</span>
+                        <span className="widget-value">Equalizer ON</span>
                       </div>
                     </div>
-                    <div className="app-rating-row">
-                      <div className="star-rating">{renderStars(app.rating)}</div>
-                      <span className="rating-text">{app.rating}</span>
-                      <span className="download-count">
-                        {app.downloads.toLocaleString()} downloads
-                      </span>
+
+                    <div className="floating-widget widget-right">
+                      <div className="widget-star">
+                        <Star size={16} fill="currentColor" />
+                      </div>
+                      <div className="widget-content">
+                        <span className="widget-label">User Rating</span>
+                        <span className="widget-value">4.9 / 5.0</span>
+                      </div>
                     </div>
-                    <div className="app-card-footer">
-                      <span className="app-size">{app.size}</span>
-                      <button
-                        className="btn-card"
-                        onClick={() => handleDownload(app.id, app.apkUrl, app.name)}
-                        disabled={downloadingAppId === app.id}
-                      >
-                        {downloadingAppId === app.id ? (
-                          <span>Starting...</span>
-                        ) : (
-                          <>
-                            <Download size={14} /> Download
-                          </>
-                        )}
-                      </button>
+
+                    <div className="floating-widget widget-center-bottom">
+                      <span className="widget-pill">{downloads.toLocaleString()} Downloads</span>
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
-            ) : (
-              <p style={{ color: "var(--text-secondary)", textAlign: "center", padding: "60px 0" }}>
-                No apps found matching the filter combination. Try clearing your search parameters.
-              </p>
-            )}
+            </section>
+
+            {/* Video Showcase Section */}
+            <section className="discover-hero" style={{ background: "var(--bg-secondary)", padding: "30px", marginBottom: "40px" }}>
+              <div className="section-title-bar">
+                <h2>
+                  <Play size={24} /> Official Promo Clip
+                </h2>
+              </div>
+              <video
+                className="demo-video video-3d"
+                autoPlay
+                loop
+                muted
+                playsInline
+                src="./vibeflow-ad.mp4"
+                aria-label="Vibeflow demo video"
+                style={{ width: "100%", borderRadius: "12px", border: "1px solid var(--glass-border)", aspectRatio: "16/9", objectFit: "cover" }}
+              />
+            </section>
+
+            {/* Release details and Guides */}
+            <section className="grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "40px" }}>
+              
+              {/* Release Notes */}
+              <div className="app-card" style={{ padding: "30px" }}>
+                <div className="app-card-header">
+                  <div className="metric-icon" style={{ width: "40px", height: "40px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Info size={20} />
+                  </div>
+                  <h3 style={{ fontSize: "20px", fontWeight: 800 }}>Release Notes</h3>
+                </div>
+                <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginBottom: "20px", fontWeight: 600 }}>
+                  {version.message}
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "20px" }}>
+                  <span className="hero-badge" style={{ margin: 0, padding: "4px 12px", fontSize: "12px" }}>
+                    <CalendarDays size={12} style={{ marginRight: "4px" }} /> {version.releaseDate}
+                  </span>
+                  <span className="hero-badge" style={{ margin: 0, padding: "4px 12px", fontSize: "12px" }}>
+                    <Smartphone size={12} style={{ marginRight: "4px" }} /> {version.minAndroid}
+                  </span>
+                </div>
+                <h4 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "10px" }}>Changelog:</h4>
+                <ul style={{ paddingLeft: "16px", fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.7 }}>
+                  {version.changelog.map((item, index) => (
+                    <li key={index} style={{ marginBottom: "6px" }}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Install instructions */}
+              <div className="app-card" style={{ padding: "30px" }}>
+                <div className="app-card-header">
+                  <div className="metric-icon" style={{ width: "40px", height: "40px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <RefreshCw size={20} />
+                  </div>
+                  <h3 style={{ fontSize: "20px", fontWeight: 800 }}>How to Install & Update</h3>
+                </div>
+                <ol style={{ paddingLeft: "16px", fontSize: "13.5px", color: "var(--text-secondary)", lineHeight: 1.8 }}>
+                  <li style={{ marginBottom: "12px" }}>Tap the <strong>Download APK</strong> button above to retrieve the package.</li>
+                  <li style={{ marginBottom: "12px" }}>Launch the downloaded file from your mobile browser or file explorer.</li>
+                  <li style={{ marginBottom: "12px" }}>Grant permission to install from <i>Unknown Sources</i> if prompted by Android.</li>
+                  <li style={{ marginBottom: "12px" }}>Tap <strong>Install</strong> or <strong>Update</strong>. Your files and settings are securely kept.</li>
+                </ol>
+              </div>
+
+            </section>
           </div>
         )}
 
@@ -719,46 +558,40 @@ function App() {
           <div className="tab-pane">
             <div className="section-title-bar">
               <h2>
-                <UploadCloud size={24} /> Developer APK Publisher
+                <UploadCloud size={24} /> Publish Vibeflow Update
               </h2>
             </div>
 
             <div className="publish-layout">
-              {/* Instructions Side */}
+              {/* Guidance side */}
               <div className="publish-instructions">
-                <h3>Verification Checklist</h3>
+                <h3>Vibeflow Signing Credentials</h3>
                 <p style={{ color: "var(--text-secondary)", fontSize: "14px", marginTop: "8px" }}>
-                  To maintain the security integrity of our catalog, all submissions go through automated malware analysis.
+                  Pushed updates must contain matching cryptographic certificates to trigger automatic user upgrades.
                 </p>
 
                 <ul className="instructions-list">
                   <li>
                     <span className="instructions-step">1</span>
                     <div className="instructions-text">
-                      <h4>Verified Package ID</h4>
-                      <p>Ensure your Android manifest file includes a distinct package namespace.</p>
+                      <h4>Verified Package</h4>
+                      <p>The package name must remain `com.astraardency.vibeflow`.</p>
                     </div>
                   </li>
                   <li>
                     <span className="instructions-step">2</span>
                     <div className="instructions-text">
-                      <h4>Cryptographic Signature</h4>
-                      <p>Sign the binary release using your official developer keystore certificate.</p>
-                    </div>
-                  </li>
-                  <li>
-                    <span className="instructions-step">3</span>
-                    <div className="instructions-text">
-                      <h4>Metadata Optimization</h4>
-                      <p>Upload screenshot images, version info, and descriptive explanations.</p>
+                      <h4>Play Integrity Scan</h4>
+                      <p>All binaries go through static analysis scanning to verify safety tags.</p>
                     </div>
                   </li>
                 </ul>
               </div>
 
-              {/* Form Side */}
+              {/* Form card */}
               <form className="publish-form-card" onSubmit={handlePublishSubmit}>
-                {/* Drag and Drop Zone */}
+                
+                {/* File Dropzone */}
                 <div
                   className={`dropzone-container ${isDragActive ? "drag-active" : ""}`}
                   onDragEnter={handleDrag}
@@ -778,106 +611,91 @@ function App() {
                   {formFile ? (
                     <div className="file-selected-indicator">
                       <CheckCircle size={20} />
-                      <span>{formFile.name} ({formSize})</span>
+                      <span>{formFile.name} ({(formFile.size / (1024 * 1024)).toFixed(1)} MB)</span>
                     </div>
                   ) : (
                     <>
                       <UploadCloud className="dropzone-icon" size={48} />
-                      <p className="dropzone-text">Drag & drop your APK file here</p>
+                      <p className="dropzone-text">Drop Vibeflow APK updates here</p>
                       <p className="dropzone-subtext">or click to browse local files (max 100MB)</p>
                     </>
                   )}
                 </div>
 
-                {/* Form Fields */}
-                <div className="form-group">
-                  <label htmlFor="app-title">Application Title *</label>
-                  <input
-                    id="app-title"
-                    type="text"
-                    required
-                    className="form-control"
-                    placeholder="e.g. Astro Explorer"
-                    value={formTitle}
-                    onChange={(e) => setFormTitle(e.target.value)}
-                  />
-                </div>
-
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="app-dev">Developer Studio *</label>
+                    <label htmlFor="app-ver-name">Version Name *</label>
                     <input
-                      id="app-dev"
+                      id="app-ver-name"
                       type="text"
                       required
                       className="form-control"
-                      placeholder="e.g. NextGen Apps Ltd"
-                      value={formDev}
-                      onChange={(e) => setFormDev(e.target.value)}
+                      placeholder="e.g. 1.0.11"
+                      value={formVersionName}
+                      onChange={(e) => setFormVersionName(e.target.value)}
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="app-ver">Version *</label>
+                    <label htmlFor="app-ver-code">Version Code *</label>
                     <input
-                      id="app-ver"
-                      type="text"
+                      id="app-ver-code"
+                      type="number"
                       required
                       className="form-control"
-                      placeholder="e.g. 1.2.0"
-                      value={formVersion}
-                      onChange={(e) => setFormVersion(e.target.value)}
+                      placeholder="e.g. 11"
+                      value={formVersionCode}
+                      onChange={(e) => setFormVersionCode(e.target.value)}
                     />
                   </div>
                 </div>
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="app-cat">Category *</label>
+                    <label htmlFor="app-min-android">Requires Android *</label>
                     <select
-                      id="app-cat"
+                      id="app-min-android"
                       className="form-control"
-                      value={formCategory}
-                      onChange={(e) => setFormCategory(e.target.value)}
+                      value={formMinAndroid}
+                      onChange={(e) => setFormMinAndroid(e.target.value)}
                     >
-                      {CATEGORIES.filter(c => c !== "All").map(c => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
+                      <option value="Android 7.0+">Android 7.0+</option>
+                      <option value="Android 8.0+">Android 8.0+</option>
+                      <option value="Android 9.0+">Android 9.0+</option>
+                      <option value="Android 10.0+">Android 10.0+</option>
                     </select>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="app-size">Simulated Package Size *</label>
+                    <label htmlFor="app-release-msg">Release Tagline</label>
                     <input
-                      id="app-size"
+                      id="app-release-msg"
                       type="text"
-                      required
                       className="form-control"
-                      placeholder="e.g. 35.4 MB"
-                      value={formSize}
-                      onChange={(e) => setFormSize(e.target.value)}
+                      placeholder="e.g. Performance upgrade"
+                      value={formMessage}
+                      onChange={(e) => setFormMessage(e.target.value)}
                     />
                   </div>
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="app-desc">Description</label>
+                  <label htmlFor="app-changelog">Changelog (one entry per line)</label>
                   <textarea
-                    id="app-desc"
+                    id="app-changelog"
                     className="form-control"
-                    placeholder="Write a clear functional overview of the app..."
-                    value={formDesc}
-                    onChange={(e) => setFormDesc(e.target.value)}
+                    placeholder="Improved equalizer settings&#10;Fixed bluetooth audio lag&#10;Added widgets support"
+                    value={formChangelog}
+                    onChange={(e) => setFormChangelog(e.target.value)}
                   />
                 </div>
 
                 <button type="submit" className="btn btn-primary" style={{ width: "100%" }} disabled={uploading}>
-                  {uploading ? "Publishing Upload in Progress..." : "Publish to Directory"}
+                  {uploading ? "Analyzing package integrity..." : "Upload & Sync Release"}
                 </button>
 
-                {/* Progress bar animation */}
                 {uploading && (
                   <div className="upload-progress-wrapper">
                     <div className="progress-header">
-                      <span>Simulating Secure Sandbox Scanning...</span>
+                      <span>Verifying signature & parsing package files...</span>
                       <span>{uploadProgress}%</span>
                     </div>
                     <div className="progress-bar-bg">
@@ -889,7 +707,7 @@ function App() {
                 {uploadSuccess && (
                   <div className="success-state">
                     <CheckCircle size={20} />
-                    <span>Upload Successful! Scanning completed, listed in Directory.</span>
+                    <span>Upload sync completed successfully! Pushed to Discover view.</span>
                   </div>
                 )}
               </form>
@@ -902,7 +720,7 @@ function App() {
           <div className="tab-pane">
             <div className="section-title-bar">
               <h2>
-                <BarChart3 size={24} /> Developer Analytics Hub
+                <BarChart3 size={24} /> Vibeflow Analytics Hub
               </h2>
             </div>
 
@@ -913,21 +731,21 @@ function App() {
                   <Download size={24} />
                 </div>
                 <div className="metric-info">
-                  <span className="metric-value">{totalDownloads.toLocaleString()}</span>
+                  <span className="metric-value">{downloads.toLocaleString()}</span>
                   <span className="metric-label">Total Downloads</span>
                 </div>
-                <span className="metric-trend">+14%</span>
+                <span className="metric-trend">+8%</span>
               </div>
 
               <div className="metric-card">
                 <div className="metric-icon">
-                  <Grid size={24} />
+                  <Smartphone size={24} />
                 </div>
                 <div className="metric-info">
-                  <span className="metric-value">{activeAppsCount}</span>
-                  <span className="metric-label">Active Apps</span>
+                  <span className="metric-value">v{version.latestVersionName}</span>
+                  <span className="metric-label">Active Version</span>
                 </div>
-                <span className="metric-trend" style={{ color: "var(--accent-cyan)" }}>Stable</span>
+                <span className="metric-trend" style={{ color: "var(--accent-cyan)" }}>Live</span>
               </div>
 
               <div className="metric-card">
@@ -935,21 +753,21 @@ function App() {
                   <Star size={24} />
                 </div>
                 <div className="metric-info">
-                  <span className="metric-value">{averageRating}</span>
-                  <span className="metric-label">Average Rating</span>
+                  <span className="metric-value">4.9</span>
+                  <span className="metric-label">User Rating</span>
                 </div>
-                <span className="metric-trend">+0.2</span>
+                <span className="metric-trend" style={{ color: "#eab308" }}>★ ★ ★ ★ ★</span>
               </div>
 
               <div className="metric-card">
                 <div className="metric-icon">
-                  <ThumbsUp size={24} />
+                  <Clock size={24} />
                 </div>
                 <div className="metric-info">
-                  <span className="metric-value">{totalPoints.toLocaleString()}</span>
-                  <span className="metric-label">Developer Score</span>
+                  <span className="metric-value">{version.releaseDate}</span>
+                  <span className="metric-label">Last Updated</span>
                 </div>
-                <span className="metric-trend" style={{ color: "#eab308" }}>+22%</span>
+                <span className="metric-trend" style={{ color: "var(--text-muted)" }}>Verified</span>
               </div>
             </div>
 
@@ -957,9 +775,9 @@ function App() {
               {/* Analytics Graph */}
               <div className="dashboard-panel">
                 <div className="dashboard-panel-header">
-                  <h3>Cumulative Monthly Downloads</h3>
+                  <h3>Historical Download Metrics</h3>
                   <span style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 700 }}>
-                    Updates in real-time on card download triggers
+                    Refreshes automatically upon package downloads
                   </span>
                 </div>
 
@@ -976,13 +794,13 @@ function App() {
                       </linearGradient>
                     </defs>
 
-                    {/* Chart grid helper lines */}
+                    {/* Chart grids */}
                     <line x1="50" y1="50" x2="480" y2="50" className="chart-grid-line" />
                     <line x1="50" y1="116" x2="480" y2="116" className="chart-grid-line" />
                     <line x1="50" y1="183" x2="480" y2="183" className="chart-grid-line" />
                     <line x1="50" y1="250" x2="480" y2="250" className="chart-grid-line" />
 
-                    {/* Fill Area */}
+                    {/* Filled area */}
                     {chartPoints.length > 0 && (
                       <path d={chartAreaPath} className="chart-area" />
                     )}
@@ -992,7 +810,7 @@ function App() {
                       <path d={chartLinePath} className="chart-line" />
                     )}
 
-                    {/* Individual points */}
+                    {/* Graph nodes */}
                     {chartPoints.map((point, idx) => (
                       <circle
                         key={idx}
@@ -1005,7 +823,7 @@ function App() {
                       </circle>
                     ))}
 
-                    {/* X-axis labels */}
+                    {/* Axis Labels */}
                     {chartPoints.map((point, idx) => (
                       <text
                         key={`lbl-${idx}`}
@@ -1021,7 +839,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Recent User Reviews */}
+              {/* Reviews List */}
               <div className="dashboard-panel">
                 <div className="dashboard-panel-header">
                   <h3>Recent Feedback</h3>
@@ -1035,7 +853,6 @@ function App() {
                         <span className="review-date">{rev.date}</span>
                       </div>
                       <div className="review-meta">
-                        <span className="review-app-name">{rev.appName}</span>
                         <div className="star-rating" style={{ color: "#eab308", display: "flex", gap: "2px" }}>
                           {renderStars(rev.rating)}
                         </div>
@@ -1050,12 +867,12 @@ function App() {
         )}
       </main>
 
-      {/* Footer Links */}
+      {/* Footer Section */}
       <footer className="footer">
         <div className="container footer-content">
           <div className="footer-logo">
             <Compass size={20} className="logo-icon" />
-            <span>AeroPublish Platform</span>
+            <span>Vibeflow App Distribution</span>
           </div>
 
           <div className="footer-links">
@@ -1071,7 +888,7 @@ function App() {
           </div>
 
           <span className="footer-copy">
-            © 2026 AeroPublish. All rights and distribution certificates active.
+            © 2026 Vibeflow. Created by @Astraardency. All rights reserved.
           </span>
         </div>
       </footer>
